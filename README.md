@@ -1,4 +1,7 @@
-# U-Net Implementation in PyTorch
+# U-Net Implementation in <img src="./images/Pytorch_logo.png" alt="Kitten" title="A cute kitten" width="150" height="30" />
+
+
+![alt text](./images/Pytorch_logo.png =100x100 "PyTorch")
 ## Overview
 
 ### Data
