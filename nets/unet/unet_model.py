@@ -29,6 +29,18 @@ class UNet(nn.Module):
     """
 
     def __init__(self, num_classes, input_channels=3, depth=5, second_layer_channels=64 ):
+        """
+        Prameters
+        ---------
+        num_classes : int
+            num of output classes
+        input_channels : int, optional
+            num of input channels
+        depth : int, optional 
+            num of encoding and decoding levels
+        second_layer_channels : int, optional
+            num of channels of second layer
+        """
         super(UNet,self).__init__()
 
         self.num_classes = num_classes
@@ -56,14 +68,15 @@ class UNet(nn.Module):
         # self.reset_params()
 
     def weight_init(self):
+        """Initialize wieght"""
         for ix, m in enumerate(self.modules()):
             weight_init(m)
 
     def forward(self,x):
+        """Forward path"""
         contracting_outs = list()
 
         for ix, contracting_unit in enumerate(self.contracting_convs):
-            # print('{}/{}'.format(ix+1,len(self.contracting_convs)))
             before_pooling, after_pooling = contracting_unit(x)
 
             if after_pooling is not None:
@@ -71,13 +84,8 @@ class UNet(nn.Module):
             else:
                 x = before_pooling
             contracting_outs.append(before_pooling)
-        # print('C C')
         contracting_outs.reverse()
-        # print('C CR')
         for ix, (contracting_unit_out, expanding_unit) in enumerate(zip( contracting_outs[1:], self.expanding_convs )):
-            # print('{}/{}'.format(ix,len(self.expanding_convs)))
-            # print('{} -> x.size():{}'.format(ix, x.size()))
-            # print('{} -> contracting_unit_out.size(): {}'.format(ix, contracting_unit_out.size()))
             x = expanding_unit( contracting_unit_out, x )
 
         x = self.final_conv(x)
