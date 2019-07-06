@@ -65,8 +65,6 @@ class UNet(nn.Module):
         self.expanding_convs = nn.ModuleList(self.expanding_convs)
         self.final_conv = conv1x1( expanding_in_channels[-1], expanding_out_channels[-1] )
 
-        # self.reset_params()
-
     def weight_init(self):
         """Initialize wieght"""
         for ix, m in enumerate(self.modules()):
