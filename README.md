@@ -20,4 +20,4 @@ Training U-Net for 30 epoch with batch-size of 2 and input size of 3x960x720[]
 
 ## Refrences
 
-* O.m Ronneberger, P. Fischer, and T. Brox, [*"U-Net: Convolutional Networks for Biomedical Image Segmentation"*](https://arxiv.org/abs/1505.04597), May 2015, arXiv:1505.04597
+* O. Ronneberger, P. Fischer, and T. Brox, [*"U-Net: Convolutional Networks for Biomedical Image Segmentation"*](https://arxiv.org/abs/1505.04597), May 2015, arXiv:1505.04597
