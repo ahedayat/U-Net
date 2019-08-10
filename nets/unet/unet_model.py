@@ -1,7 +1,8 @@
 import utils as util
 import gc
 from .unet_parts import *
-from .unet_utils import weight_init
+from .unet_utils import unet_weight_init as weight_init
+
 
 class UNet(nn.Module):
     """
@@ -28,7 +29,7 @@ class UNet(nn.Module):
         forward path of model
     """
 
-    def __init__(self, num_classes, input_channels=3, depth=5, second_layer_channels=64 ):
+    def __init__(self, num_classes, input_channels=3, depth=5, second_layer_channels=64):
         """
         Prameters
         ---------
@@ -41,36 +42,40 @@ class UNet(nn.Module):
         second_layer_channels : int, optional
             num of channels of second layer
         """
-        super(UNet,self).__init__()
+        super(UNet, self).__init__()
 
         self.num_classes = num_classes
         self.input_channels = input_channels
 
-        contracting_out_channels = [ second_layer_channels * (2**i) for i in range(depth) ]
-        contracting_in_channels = [self.input_channels] + contracting_out_channels[:-1]
+        contracting_out_channels = [
+            second_layer_channels * (2**i) for i in range(depth)]
+        contracting_in_channels = [
+            self.input_channels] + contracting_out_channels[:-1]
         expanding_in_channels = contracting_out_channels[::-1]
         expanding_out_channels = expanding_in_channels[1:] + [self.num_classes]
 
-        self.contracting_convs =[ 
-            ContractingUnit(in_channel, out_channel, pooling = True if ix!=(depth-1) else False) 
-            for ix,(in_channel, out_channel) in enumerate(zip(contracting_in_channels, contracting_out_channels))
-            ]
+        self.contracting_convs = [
+            ContractingUnit(in_channel, out_channel,
+                            pooling=True if ix != (depth-1) else False)
+            for ix, (in_channel, out_channel) in enumerate(zip(contracting_in_channels, contracting_out_channels))
+        ]
 
-        self.expanding_convs =[ 
-            ExpandingUnit(in_channel, out_channel*2, out_channel) 
-            for ix,(in_channel, out_channel) in enumerate(zip(expanding_in_channels[:-1], expanding_out_channels[:-1]))
-            ]
+        self.expanding_convs = [
+            ExpandingUnit(in_channel, out_channel*2, out_channel)
+            for ix, (in_channel, out_channel) in enumerate(zip(expanding_in_channels[:-1], expanding_out_channels[:-1]))
+        ]
 
         self.contracting_convs = nn.ModuleList(self.contracting_convs)
         self.expanding_convs = nn.ModuleList(self.expanding_convs)
-        self.final_conv = conv1x1( expanding_in_channels[-1], expanding_out_channels[-1] )
+        self.final_conv = conv1x1(
+            expanding_in_channels[-1], expanding_out_channels[-1])
 
     def weight_init(self):
         """Initialize wieght"""
         for ix, m in enumerate(self.modules()):
             weight_init(m)
 
-    def forward(self,x):
+    def forward(self, x):
         """Forward path"""
         contracting_outs = list()
 
@@ -83,8 +88,8 @@ class UNet(nn.Module):
                 x = before_pooling
             contracting_outs.append(before_pooling)
         contracting_outs.reverse()
-        for ix, (contracting_unit_out, expanding_unit) in enumerate(zip( contracting_outs[1:], self.expanding_convs )):
-            x = expanding_unit( contracting_unit_out, x )
+        for ix, (contracting_unit_out, expanding_unit) in enumerate(zip(contracting_outs[1:], self.expanding_convs)):
+            x = expanding_unit(contracting_unit_out, x)
 
         x = self.final_conv(x)
 

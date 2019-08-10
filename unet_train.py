@@ -23,12 +23,10 @@ def _main(args):
         './datasets/camvid/{}'.format(data_type) for data_type in ['train', 'val', 'test']]
     annotations_version = 2
 
-    check_counter = 4
-
     loading_model_path, loading_model_name = ('./models', 'unet')
     saving_model_path, saving_model_name = ('./models', 'unet')
 
-    report_path = './reports'
+    reports_path = './reports'
 
     torch.manual_seed(0)
     if args.gpu and torch.cuda.is_available():
@@ -92,21 +90,17 @@ def _main(args):
         model_name = 'unet_epoch_{}'.format(args.start_epoch-1)
         model, optimizer = unet.load(model_path, model_name, model, optimizer)
 
-    unet.train(model,
-               train_data,
-               val_data,
-               optimizer,
-               criterion,
-               device,
+    unet.train(unet=model,
+               train_data_loader=train_data,
+               optimizer=optimizer,
+               criterion=criterion,
+               device=device,
+               report_path='{}/{}'.format(reports_path, annalysis_num),
                num_epoch=args.epochs,
+               start_epoch=args.start_epoch,
                batch_size=args.batchsize,
                num_workers=args.num_workers,
-               check_counter=check_counter,
-               gpu=args.gpu,
-               saving_model_path='{}/analysis_{}'.format(
-                   report_path, annalysis_num),
-               run_val=False,
-               start_epoch=args.start_epoch)
+               gpu=args.gpu)
 
     if args.save:
         if not os.path.isdir(saving_model_path):
