@@ -12,6 +12,7 @@ import shutil
 import torch
 from optparse import OptionParser
 
+
 def mkdir(dir_path, dir_name, forced_remove=False):
     """
     Make new directory
@@ -24,11 +25,12 @@ def mkdir(dir_path, dir_name, forced_remove=False):
     forced_remove : boolean, optional
         if forced_remove is true and there is a directory in dir_path with dir_name then delete it.
     """
-    new_dir = '{}/{}'.format(dir_path,dir_name)
-    if forced_remove and os.path.isdir( new_dir ):
-        shutil.rmtree( new_dir )
-    if not os.path.isdir( new_dir ):
-        os.makedirs( new_dir )
+    new_dir = '{}/{}'.format(dir_path, dir_name)
+    if forced_remove and os.path.isdir(new_dir):
+        shutil.rmtree(new_dir)
+    if not os.path.isdir(new_dir):
+        os.makedirs(new_dir)
+
 
 def touch(file_path, file_name, forced_remove=False):
     """
@@ -42,12 +44,14 @@ def touch(file_path, file_name, forced_remove=False):
     forced_remove : boolean, optional
         if forced_remove is true and there is a file in file_path with file_name then delete it.
     """
-    new_file = '{}/{}'.format(file_path,file_name)
-    assert os.path.isdir( file_path ), ' \"{}\" does not exist.'.format(file_path)
+    new_file = '{}/{}'.format(file_path, file_name)
+    assert os.path.isdir(
+        file_path), ' \"{}\" does not exist.'.format(file_path)
     if forced_remove and os.path.isfile(new_file):
         os.remove(new_file)
     if not os.path.isfile(new_file):
         open(new_file, 'a').close()
+
 
 def write_file(file_path, file_name, content, new_line=True, forced_remove_prev=False):
     """
@@ -72,6 +76,7 @@ def write_file(file_path, file_name, content, new_line=True, forced_remove_prev=
             f.write('\n')
         f.close()
 
+
 def copy_file(src_path, src_file_name, dst_path, dst_file_name):
     """
     copying file
@@ -86,7 +91,9 @@ def copy_file(src_path, src_file_name, dst_path, dst_file_name):
     dst_file_name : str
         name of copied file
     """
-    shutil.copyfile('{}/{}'.format(src_path, src_file_name), '{}/{}'.format(dst_path,dst_file_name))  
+    shutil.copyfile('{}/{}'.format(src_path, src_file_name),
+                    '{}/{}'.format(dst_path, dst_file_name))
+
 
 def ls(dir_path):
     """
@@ -95,7 +102,7 @@ def ls(dir_path):
     ----------
     dir_path : str
         directory that we want to list its content
-    
+
     Returns
     -------
     : list of strings
@@ -103,7 +110,8 @@ def ls(dir_path):
     """
     return os.listdir(dir_path)
 
-def save_np_file(file_name,np_arr):
+
+def save_np_file(file_name, np_arr):
     """
     saving a numpy array
     Parameters
@@ -115,10 +123,11 @@ def save_np_file(file_name,np_arr):
     """
     np.save(file_name, np_arr)
 
+
 def get_args():
     parser = OptionParser()
-    parser.add_option('-p', '--problem', dest='problem', default=1, type='int',
-                      help='problem number')
+    parser.add_option('-a', '--analysis', dest='analysis', default=1, type='int',
+                      help='analysis number')
     parser.add_option('-v', '--validate', action='store_true', dest='val',
                       default=False, help='validate model')
 
@@ -138,7 +147,7 @@ def get_args():
 
     parser.add_option('-g', '--gpu', action='store_true', dest='gpu',
                       default=False, help='use cuda')
-    parser.add_option('-w', '--worker', dest='num_workers',default=1,
+    parser.add_option('-w', '--worker', dest='num_workers', default=1,
                       type='int', help='use cuda')
 
     parser.add_option('-j', '--start-epoch', dest='start_epoch', default=0,
@@ -146,11 +155,12 @@ def get_args():
 
     parser.add_option('-l', '--load', action='store_true', dest='load',
                       default=False, help='load(read) file model')
-    parser.add_option('-s', '--save', dest='save',action='store_true',
+    parser.add_option('-s', '--save', dest='save', action='store_true',
                       default=False, help='save file model')
 
     (options, args) = parser.parse_args()
     return options
+
 
 def del_tensors(tensors):
     for tensor in tensors:
